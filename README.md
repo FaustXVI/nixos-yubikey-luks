@@ -53,6 +53,12 @@ Finally, we need a couple of bash helper functions.
 Add these to a shell file and source it.
 
 ## Procedure
+
+Steps 3 to 6 included are handle automaticaly by the script `encrypt.sh` which requires 3 parameters :
+  * the device (in the exemple blow, /dev/sdb5)
+  * a name (in the exemple, encrypted)
+  * a path to an unencrypted filesystem (in the exemple, /boot)
+
 ### Step 1 - Program the Yubikey Free Slot
 Program the Yubikey's free slot challenge-response mode (HMAC-SHA1). We let the Yubikey generate a key for us.
 
@@ -151,6 +157,11 @@ Open up your hardware configuration at `/etc/nixos/hardware-configuration.nix` a
       };
     };
    
+  fileSystems."/path/to/mount" =
+    { device = "/dev/disk/by-uuid/c146fd66-7472-4de4-93a9-cfa79e0c0668"; # find your uuid after opening the crypted storage
+      fsType = "ext4";
+    };
+
 ### Step 8 - Reboot
 Rebuild your NixOS configuration and reboot
 
