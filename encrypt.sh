@@ -47,11 +47,8 @@ mkdir -p "$BOOT_ROOT/crypt-storage"
 echo -ne "$SALT\n$ITERATIONS" > "$BOOT_ROOT/crypt-storage/default"
 
 echo "opening encrypted partition"
-echo -n "$LUKS_KEY" | hextorb | cryptsetup open "$PARTITION" "$NAME" --key-file=-
+echo -n "$LUKS_KEY" | hextorb | cryptsetup open "$PARTITION" "$NAME-cyphered" --key-file=-
 
 echo "formatting"
-mkfs.ext4 -L "$NAME" "/dev/mapper/$NAME"
+mkfs.ext4 -L "$NAME" "/dev/mapper/$NAME-cyphered"
 
-sleep 2
-echo "unmount"
-cryptsetup close "$NAME"
