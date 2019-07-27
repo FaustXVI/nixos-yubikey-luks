@@ -29,8 +29,16 @@ HASH="sha512"
 echo "computing salt"
 SALT="$(dd if=/dev/random bs=1 count=$SALT_LENGTH 2>/dev/null | rbtohex)"
 
-echo "enter user passphrase"
+echo "enter passphrase"
 read -s USER_PASSPHRASE
+echo "confirm passphrase"
+read -s CONFIRM_USER_PASSPHRASE
+
+if [ "$USER_PASSPHRASE" != "$CONFIRM_USER_PASSPHRASE" ]
+then
+    echo "Passphrase are different exiting"
+    exit
+fi
 
 echo "creating challenge"
 CHALLENGE="$(echo -n $SALT | openssl dgst -binary -sha512 | rbtohex)"
