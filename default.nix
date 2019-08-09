@@ -3,6 +3,7 @@
 let
   inherit (nixpkgs) callPackage pkgs stdenv;
   pbkdf2Sha512 = callPackage ./pbkdf2-sha512 { };
+  encrypt-script = callPackage ./scripts { inherit pbkdf2Sha512; };
 in
   stdenv.mkDerivation {
     name = "yubikey-luks-setup";
@@ -12,6 +13,7 @@ in
       parted
       pbkdf2Sha512
       yubikey-personalization
+      encrypt-script
     ];
     
     shellHook = ''
@@ -24,6 +26,5 @@ in
       }
     '';
 
-    
     inherit (pkgs) cryptsetup openssl yubikey-personalization;
   }
