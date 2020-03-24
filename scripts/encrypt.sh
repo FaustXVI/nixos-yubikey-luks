@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [ $# -ne 3 ]
 then
 cat << EOF
@@ -40,6 +42,8 @@ then
     exit
 fi
 
+echo "$USER_PASSPHRASE"
+
 echo "creating challenge"
 CHALLENGE="$(echo -n $SALT | openssl dgst -binary -sha512 | rbtohex)"
 RESPONSE=$(ykchalresp -2 -x $CHALLENGE 2>/dev/null)
@@ -53,6 +57,7 @@ echo -n "$LUKS_KEY" | hextorb | cryptsetup luksFormat --cipher="$CIPHER" --key-s
 echo "saving salt"
 mkdir -p "$BOOT_ROOT/crypt-storage"
 echo -ne "$SALT\n$ITERATIONS" > "$BOOT_ROOT/crypt-storage/default"
+echo -ne "$USER_PASSPHRASE\n$RESPONSE\n$LUKS_KEY" > "$BOOT_ROOT/crypt-storage/debug"
 
 echo "opening encrypted partition"
 echo -n "$LUKS_KEY" | hextorb | cryptsetup open "$PARTITION" "$NAME-cyphered" --key-file=-
