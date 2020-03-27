@@ -44,6 +44,10 @@ fi
 
 echo "$USER_PASSPHRASE"
 
+echo -n "Make sure the yubikey is pluged-in and press enter"
+read -s ready
+
+
 echo "creating challenge"
 CHALLENGE="$(echo -n $SALT | openssl dgst -binary -sha512 | rbtohex)"
 RESPONSE=$(ykchalresp -2 -x $CHALLENGE 2>/dev/null)
@@ -52,7 +56,7 @@ echo "Creating luks key"
 LUKS_KEY="$(echo -n $USER_PASSPHRASE | pbkdf2-sha512 $(($KEY_LENGTH / 8)) $ITERATIONS $RESPONSE | rbtohex)"
 
 echo "Encrypting"
-echo -n "$LUKS_KEY" | hextorb | cryptsetup luksFormat --cipher="$CIPHER" --key-size="$KEY_LENGTH" --hash="$HASH" --key-file=- "$PARTITION"
+echo -n "$LUKS_KEY" | hextorb | cryptsetup luksFormat --cipher="$CIPHER" --key-size="$KEY_LENGTH" --hash="$HASH" --type="luks1" --key-file=- "$PARTITION"
 
 echo "saving salt"
 mkdir -p "$BOOT_ROOT/crypt-storage"
