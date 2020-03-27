@@ -42,8 +42,6 @@ then
     exit
 fi
 
-echo "$USER_PASSPHRASE"
-
 echo -n "Make sure the yubikey is pluged-in and press enter"
 read -s ready
 
@@ -61,7 +59,6 @@ echo -n "$LUKS_KEY" | hextorb | cryptsetup luksFormat --cipher="$CIPHER" --key-s
 echo "saving salt"
 mkdir -p "$BOOT_ROOT/crypt-storage"
 echo -ne "$SALT\n$ITERATIONS" > "$BOOT_ROOT/crypt-storage/default"
-echo -ne "$USER_PASSPHRASE\n$RESPONSE\n$LUKS_KEY" > "$BOOT_ROOT/crypt-storage/debug"
 
 echo "opening encrypted partition"
 echo -n "$LUKS_KEY" | hextorb | cryptsetup open "$PARTITION" "$NAME-cyphered" --key-file=-
